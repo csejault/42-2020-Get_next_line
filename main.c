@@ -21,12 +21,12 @@ int main ()
 	}
 	get_next_line(fd, &line);
 	printf("Line = %s\n", line);
-	get_next_line(fd2, &line);
-	printf("Line = %s\n", line);
-	get_next_line(fd, &line);
-	printf("Line = %s\n", line);
-	get_next_line(fd2, &line);
-	printf("Line = %s\n", line);
+//	get_next_line(fd2, &line);
+//	printf("Line = %s\n", line);
+//	get_next_line(fd, &line);
+//	printf("Line = %s\n", line);
+//	get_next_line(fd2, &line);
+//	printf("Line = %s\n", line);
 
 
 
