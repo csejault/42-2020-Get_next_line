@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/27 16:20:45 by csejault          #+#    #+#             */
-/*   Updated: 2020/12/02 20:56:34 by csejault         ###   ########.fr       */
+/*   Updated: 2020/12/07 15:48:03 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,23 +18,23 @@
 
 #include "get_next_line.h"
 
-int		fill_line(char **line, t_gnl *gnl, size_t i, int flag_eof)
+int		fill_line(char **line, t_gnl *gnl, size_t i)
 {
-	char *tofree;
-	size_t len;
+	char	*tofree;
+	size_t	len;
 
 	len = ft_strlen(gnl->cache);
 	tofree = gnl->cache;
 	if (!(*line = ft_substr(gnl->cache, 0, i++)))
 		return (-1);
-	if (flag_eof)
+	if (!gnl->cache[i] && gnl->retreadf < BUFFER_SIZE)
 	{
 		free(gnl->cache);
 		gnl->cache = NULL;
 		return (0);
 	}
 	len -= i;
-	if(!(gnl->cache = ft_substr(gnl->cache, i, len)))
+	if (!(gnl->cache = ft_substr(gnl->cache, i, len)))
 	{
 		free(*line);
 		return (-1);
@@ -45,81 +45,83 @@ int		fill_line(char **line, t_gnl *gnl, size_t i, int flag_eof)
 
 int		read_file(int fd, t_gnl *gnl)
 {
-	int		ret;
 	char	*buf;
-	char 	*tofree;
-	
+	char	*tofree;
+
 	tofree = gnl->cache;
-	//{printf("Debut Read file\n");}
 	if (!(buf = malloc(sizeof(*buf) * (BUFFER_SIZE + 1))))
+		return (gnl->retreadf = -1);
+	if (0 > (gnl->retreadf = read(fd, buf, BUFFER_SIZE)))
 	{
-		//{printf("error malloa BUF\n");}
-		return (-1);
-	}
-	if (0 > (ret = read(fd, buf, BUFFER_SIZE)))
-	{
-		//{printf("ret : %d, error malloc RET\n", ret);}
 		free(buf);
-		return (-1);
+		return (gnl->retreadf);
 	}
-	buf[ret] = '\0';
+	buf[gnl->retreadf] = '\0';
 	if (gnl->cache)
 	{
-		gnl->cache = ft_strjoin(gnl->cache,buf);
+		gnl->cache = ft_strjoin(gnl->cache, buf);
 		free(tofree);
 	}
 	else
 		gnl->cache = ft_strdup(buf);
 	free(buf);
 	if (!gnl->cache)
-		return (-1);
-	//{printf("fin Read file avec str = %s\n", str[fd]);}
-	return (ret);
+		return (gnl->retreadf = -1);
+	return (gnl->retreadf);
 }
 
 int		read_cache(t_gnl *gnl, int fd, char **line)
 {
-	size_t			i;
+	size_t	i;
+	int		ret;
 
+	ret = 0;
 	i = 0;
-	while (gnl->cache[i])
-	{
-		if (gnl->cache[i] == '\n')
-			return (fill_line(line, gnl, i, 0));
-		else if (!gnl->retreadf && gnl->cache[i] == '\0')
-			return (fill_line(line, gnl, i, 1));
+	while (gnl->cache[i] && gnl->cache[i] != '\n')
 		i++;
+	if (gnl->cache[i] == '\n')
+		return (ret = fill_line(line, gnl, i));
+	else if (gnl->cache[i] == '\0')
+	{
+		if (gnl->retreadf < BUFFER_SIZE) 
+			return (fill_line(line, gnl, i));
+		else if (0 > (read_file(fd, gnl)))
+			return (-1);
+		else
+			return (read_cache(gnl, fd, line));
 	}
-	if (gnl->retreadf < 0)
-		return (-1);
-	return (gnl->retreadf = read_file(fd, gnl));
+	return (-1);
 }
 
-int	get_next_line(int fd, char **line)
+int		get_next_line(int fd, char **line)
 {
 	static t_gnl	gnl;
-	int retcache;
+	int				retcache;
 
 	*line = NULL;
 	retcache = 0;
-	if (!gnl.retreadf && gnl.init == 1)
-		return (-1);
-	if (1 > BUFFER_SIZE)
+	if (1 > BUFFER_SIZE || !line)
 		return (-1);
 	if (!gnl.cache)
 	{
-		if (0 > (gnl.retreadf = read_file(fd, &gnl)))
+		//if (gnl.init == 1 && gnl.retreadf < BUFFER_SIZE)
+		//{
+		//	if (!(*line = malloc(sizeof(**line) * 20)))
+		//		return (-1);
+		//	*line[0] = '\0';
+		//	return (0);
+		//}
+		if (0 > read_file(fd, &gnl))
 			return (-1);
-			gnl.init = 1;
+		gnl.init = 1;
 	}
-	while ((retcache = read_cache(&gnl, fd, line)))
-		if (retcache > 0 && *line)
-			return (1);
-		else if (retcache < 0)
-		{
-			if (gnl.cache)
-				free(gnl.cache);
-			return (-1);
-		}
+	if( 0 > (retcache = read_cache(&gnl, fd, line))) 
+	{
+		if (gnl.cache)
+			free(gnl.cache);
+		return (-1);
+	}
+	else
+		return (retcache);
 	return (0);
 }
