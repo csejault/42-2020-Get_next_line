@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/27 16:20:45 by csejault          #+#    #+#             */
-/*   Updated: 2020/12/07 15:48:03 by csejault         ###   ########.fr       */
+/*   Updated: 2020/12/07 19:05:37 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,16 @@ int		fill_line(char **line, t_gnl *gnl, size_t i)
 {
 	char	*tofree;
 	size_t	len;
+	size_t	j;
 
+	j = i;
 	len = ft_strlen(gnl->cache);
 	tofree = gnl->cache;
 	if (!(*line = ft_substr(gnl->cache, 0, i++)))
 		return (-1);
-	if (!gnl->cache[i] && gnl->retreadf < BUFFER_SIZE)
+	while (gnl->cache[j] && gnl->cache[j] != '\n')
+		j++;
+	if ((!gnl->cache[i] && gnl->retreadf < BUFFER_SIZE) || (gnl->retreadf < BUFFER_SIZE && j == len))
 	{
 		free(gnl->cache);
 		gnl->cache = NULL;
@@ -77,6 +81,12 @@ int		read_cache(t_gnl *gnl, int fd, char **line)
 
 	ret = 0;
 	i = 0;
+	if (!gnl->retreadf && !gnl->cache[0])
+	{
+		if (!(*line = ft_strdup("")))
+			return (-1);
+		return (0);
+	}
 	while (gnl->cache[i] && gnl->cache[i] != '\n')
 		i++;
 	if (gnl->cache[i] == '\n')
@@ -115,7 +125,7 @@ int		get_next_line(int fd, char **line)
 			return (-1);
 		gnl.init = 1;
 	}
-	if( 0 > (retcache = read_cache(&gnl, fd, line))) 
+	if (0 > (retcache = read_cache(&gnl, fd, line))) 
 	{
 		if (gnl.cache)
 			free(gnl.cache);
