@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/27 16:20:45 by csejault          #+#    #+#             */
-/*   Updated: 2020/12/08 17:15:18 by csejault         ###   ########.fr       */
+/*   Updated: 2020/12/08 18:22:33 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,10 +108,10 @@ int		get_next_line(int fd, char **line)
 	static t_gnl	gnl;
 	int				retcache;
 
-	*line = NULL;
 	retcache = 0;
 	if (1 > BUFFER_SIZE || !line)
 		return (-1);
+	*line = NULL;
 	if (!gnl.cache)
 	{
 		if (0 > read_file(fd, &gnl))
