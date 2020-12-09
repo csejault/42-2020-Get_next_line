@@ -6,11 +6,11 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/30 15:42:56 by csejault          #+#    #+#             */
-/*   Updated: 2020/12/09 11:02:38 by csejault         ###   ########.fr       */
+/*   Updated: 2020/12/09 19:50:30 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 size_t	ft_strlen(const char *str)
 {
