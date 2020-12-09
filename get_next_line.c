@@ -6,15 +6,15 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/27 16:20:45 by csejault          #+#    #+#             */
-/*   Updated: 2020/12/07 19:05:37 by csejault         ###   ########.fr       */
+/*   Updated: 2020/12/09 11:01:29 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /*
- ** For the bonus, we need to know the max file descriptor limit.
- ** I used the cmd --> ulimit -a <-- to find the max limit on our environment.
- ** On guacamole, it is 256.
- */
+** For the bonus, we need to know the max file descriptor limit.
+** I used the cmd --> ulimit -a <-- to find the max limit on our environment.
+** On guacamole, it is 256.
+*/
 
 #include "get_next_line.h"
 
@@ -31,7 +31,7 @@ int		fill_line(char **line, t_gnl *gnl, size_t i)
 		return (-1);
 	while (gnl->cache[j] && gnl->cache[j] != '\n')
 		j++;
-	if ((!gnl->cache[i] && gnl->retreadf < BUFFER_SIZE) || (gnl->retreadf < BUFFER_SIZE && j == len))
+	if (!gnl->cache[j] && gnl->retreadf < BUFFER_SIZE)
 	{
 		free(gnl->cache);
 		gnl->cache = NULL;
@@ -67,7 +67,7 @@ int		read_file(int fd, t_gnl *gnl)
 		free(tofree);
 	}
 	else
-		gnl->cache = ft_strdup(buf);
+		gnl->cache = ft_substr(buf, 0, ft_strlen(buf));
 	free(buf);
 	if (!gnl->cache)
 		return (gnl->retreadf = -1);
@@ -83,7 +83,7 @@ int		read_cache(t_gnl *gnl, int fd, char **line)
 	i = 0;
 	if (!gnl->retreadf && !gnl->cache[0])
 	{
-		if (!(*line = ft_strdup("")))
+		if (!(*line = ft_substr("", 0, 0)))
 			return (-1);
 		return (0);
 	}
@@ -93,7 +93,7 @@ int		read_cache(t_gnl *gnl, int fd, char **line)
 		return (ret = fill_line(line, gnl, i));
 	else if (gnl->cache[i] == '\0')
 	{
-		if (gnl->retreadf < BUFFER_SIZE) 
+		if (gnl->retreadf < BUFFER_SIZE)
 			return (fill_line(line, gnl, i));
 		else if (0 > (read_file(fd, gnl)))
 			return (-1);
@@ -108,24 +108,17 @@ int		get_next_line(int fd, char **line)
 	static t_gnl	gnl;
 	int				retcache;
 
-	*line = NULL;
 	retcache = 0;
 	if (1 > BUFFER_SIZE || !line)
 		return (-1);
+	*line = NULL;
 	if (!gnl.cache)
 	{
-		//if (gnl.init == 1 && gnl.retreadf < BUFFER_SIZE)
-		//{
-		//	if (!(*line = malloc(sizeof(**line) * 20)))
-		//		return (-1);
-		//	*line[0] = '\0';
-		//	return (0);
-		//}
 		if (0 > read_file(fd, &gnl))
 			return (-1);
 		gnl.init = 1;
 	}
-	if (0 > (retcache = read_cache(&gnl, fd, line))) 
+	if (0 > (retcache = read_cache(&gnl, fd, line)))
 	{
 		if (gnl.cache)
 			free(gnl.cache);

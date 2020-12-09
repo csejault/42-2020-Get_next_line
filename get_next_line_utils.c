@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/30 15:42:56 by csejault          #+#    #+#             */
-/*   Updated: 2020/12/03 10:56:58 by csejault         ###   ########.fr       */
+/*   Updated: 2020/12/09 11:02:38 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,25 +20,6 @@ size_t	ft_strlen(const char *str)
 	while (str[i])
 		i++;
 	return (i);
-}
-
-char	*ft_strdup(const char *s)
-{
-	size_t	len;
-	size_t	i;
-	char	*ret;
-
-	len = ft_strlen(s);
-	if (!(ret = malloc(sizeof(*ret) * (len + 1))))
-		return (NULL);
-	i = 0;
-	while (s[i])
-	{
-		ret[i] = s[i];
-		i++;
-	}
-	ret[i] = '\0';
-	return (ret);
 }
 
 char	*ft_substr(char const *s, unsigned int start, size_t len)
