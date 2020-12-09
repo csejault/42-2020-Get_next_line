@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/27 16:20:45 by csejault          #+#    #+#             */
-/*   Updated: 2020/12/09 18:47:37 by csejault         ###   ########.fr       */
+/*   Updated: 2020/12/09 18:55:30 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,11 +112,8 @@ int		get_next_line(int fd, char **line)
 		return (-1);
 	*line = NULL;
 	if (!gnl.cache)
-	{
 		if (0 > read_file(fd, &gnl))
 			return (-1);
-		gnl.init = 1;
-	}
 	retcache = read_cache(&gnl, fd, line);
 	if (gnl.cache && retcache != 1)
 	{

@@ -6,7 +6,7 @@
 /*   By: csejault <csejault@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/27 16:11:21 by csejault          #+#    #+#             */
-/*   Updated: 2020/12/03 15:58:21 by csejault         ###   ########.fr       */
+/*   Updated: 2020/12/09 18:55:50 by csejault         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 
 typedef struct	s_gnl
 {
-	int			init;
 	int			retreadf;
 	char		*cache;
 }				t_gnl;
